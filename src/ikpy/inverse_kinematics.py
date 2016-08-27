@@ -23,8 +23,14 @@ def inverse_kinematic_optimization(chain, target_frame, starting_nodes_angles, r
     def optimize_target(x):
         # y = np.append(starting_nodes_angles[:chain.first_active_joint], x)
         y = chain.active_to_full(x, starting_nodes_angles)
-        squared_distance = np.linalg.norm(chain.forward_kinematics(y)[:3, -1] - target)
-        return squared_distance
+        current_frame = chain.forward_kinematics(y)
+        squared_distance = np.linalg.norm(current_frame[:3, -1] - target)
+        orientation_matrix_dst = target_frame[:3, :3]
+        orientation_matrix_current = current_frame[:3, :3]
+        orientation_error = np.sum([pow(np.dot(a,b) - 1,2) for a,b in zip(orientation_matrix_dst, orientation_matrix_current)])
+        print("orientation_error: " + str(orientation_error))
+          
+        return squared_distance + orientation_error
 
     # If a regularization is selected
     if regularization_parameter is not None:
