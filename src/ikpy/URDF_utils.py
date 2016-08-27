@@ -139,11 +139,19 @@ def get_urdf_parameters(urdf_file, base_elements=["base_link"], last_link_vector
         translation = joint.find("origin").attrib["xyz"].split()
         orientation = joint.find("origin").attrib["rpy"].split()
         rotation = joint.find("axis").attrib['xyz'].split()
+        limit_node = joint.find("limit")
+        bounds = (None,None)
+        if limit_node != None:
+          limit_lower = limit_node.attrib['lower']
+          limit_upper = limit_node.attrib['upper']
+          bounds = (float(limit_lower), float(limit_upper))
+
         parameters.append(lib_link.URDFLink(
             translation_vector=[float(translation[0]), float(translation[1]), float(translation[2])],
             orientation=[float(orientation[0]), float(orientation[1]), float(orientation[2])],
             rotation=[float(rotation[0]), float(rotation[1]), float(rotation[2])],
-            name=joint.attrib["name"]
+            name=joint.attrib["name"],
+            bounds=bounds
         ))
 
     # Add last_link_vector to parameters
