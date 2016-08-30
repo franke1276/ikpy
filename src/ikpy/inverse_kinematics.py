@@ -28,7 +28,7 @@ def inverse_kinematic_optimization(chain, target_frame, starting_nodes_angles, r
         orientation_matrix_dst = target_frame[:3, :3]
         orientation_matrix_current = current_frame[:3, :3]
         orientation_error = np.sum([pow(np.dot(a,b) - 1,2) for a,b in zip(orientation_matrix_dst, orientation_matrix_current)])
-        return squared_distance + orientation_error
+        return squared_distance #+ orientation_error
 
     # If a regularization is selected
     if regularization_parameter is not None:
@@ -45,7 +45,7 @@ def inverse_kinematic_optimization(chain, target_frame, starting_nodes_angles, r
     # real_bounds = real_bounds[chain.first_active_joint:]
     real_bounds = chain.active_from_full(real_bounds)
 
-    options = {}
+    options = {"disp": True}
     # Manage iterations maximum
     if max_iter is not None:
         options["maxiter"] = max_iter
